@@ -152,11 +152,15 @@ def get_segment(media_id: str, segment_name: str, access_token: str = Query(...,
     
     internal_id = media_data["internal_id"]
     segment_path = os.path.join(HLS_ROOT, internal_id, segment_name)
-    
-    if not os.path.exists(segment_path):
+    # Normalize and ensure segment_path is within the intended directory
+    abs_hls_dir = os.path.abspath(os.path.join(HLS_ROOT, internal_id))
+    norm_segment_path = os.path.abspath(os.path.normpath(segment_path))
+    if not norm_segment_path.startswith(abs_hls_dir + os.sep):
+        raise HTTPException(status_code=400, detail="Invalid segment path!")
+    if not os.path.exists(norm_segment_path):
         raise HTTPException(status_code=404, detail="Segment not found")
     
-    return FileResponse(segment_path, media_type="video/MP2T")
+    return FileResponse(norm_segment_path, media_type="video/MP2T")
 
 @app.delete("/media/{media_id}", summary="Delete media from the db.")
 def delete_media(
