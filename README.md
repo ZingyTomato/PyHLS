@@ -56,18 +56,17 @@ A self-hosted, secure HTTP Live Streaming (HLS) service designed as an open-sour
 ```bash
 ---
 services:
-	pyhls:
-		image: zingytomato/pyhls:main
-		container_name: pyhls
-		ports:
-			-  8000:8000  # External port can be changed
-		volumes:
-			-  PyHLS:/PyHLS/media  # Change PyHLS to your preferred directory
-		restart: unless-stopped
-		
-volumes: # Remove this if using your own local directory
-	PyHLS:
+  pyhls:
+    image: zingytomato/pyhls:main
+    container_name: pyhls
+    ports:
+      - 8001:8000 # External port can be changed
+    volumes:
+      - PyHLS:/PyHLS/media # Change PyHLS to your preferred directory
+    restart: unless-stopped
 
+volumes: # Remove this if using your own local directory
+  PyHLS:
 ```
 
 ### 💻 Manual Installation
