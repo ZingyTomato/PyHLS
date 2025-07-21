@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from utils import generate_hls, create_access_token, verify_access_token, hash_video_id
 from database import VideoDatabase
+from fastapi.openapi.utils import get_openapi
 
 app = FastAPI()
 MEDIA_ROOT = "media"
@@ -15,6 +16,10 @@ HLS_ROOT = os.path.join(MEDIA_ROOT, "hls")
 db = VideoDatabase()
 
 os.makedirs(HLS_ROOT, exist_ok=True)
+
+@app.get("/")
+async def home():
+    return {"Docs": "/docs", "Github": 'https://github.com/ZingyTomato/PyHLS'}
 
 @app.post("/upload/", summary="Upload a media file to stream.")
 async def upload_media(
@@ -266,6 +271,16 @@ def rewrite_playlist_with_auth_urls(playlist_path, media_id, auth_token):
     
     return "".join(new_lines)
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+            title="PyHLS",
+            version='1.0',
+            description="Secure, self-hosted HLS streaming with token-based access written in Python. https://github.com/ZingyTomato/PyHLS",
+            routes=app.routes,
+    )
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+    
+app.openapi = custom_openapi

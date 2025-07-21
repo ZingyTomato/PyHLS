@@ -41,7 +41,8 @@ A self-hosted, secure HTTP Live Streaming (HLS) service designed as an open-sour
 3.  **Access Control**: Every request requires a valid, signed JWT token. These tokens are tied to specific medias and expire after a set time, preventing long-term link sharing.
     
 4.  **Dynamic Playlist Generation**: When someone requests the playlist, it’s dynamically rewritten to include secure, time-expiring URLs for each segment. Even if someone shares the playlist URL, the embedded links will expire on their own.
-    
+
+All media metadata, including IDs, access keys, expiry times, and status, is stored in a local file-based database (`video_database.json`), stored in `/media/`. This JSON file provides persistent storage with thread-safe read/write operations.
 
 ## 🔨 Requirements
 
